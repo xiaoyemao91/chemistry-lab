@@ -57,6 +57,14 @@ ConcentrationResult CalculateConcentration(
 
 职责：执行确定性计算并报告输入不足、退化拟合、非有限数值和超出适用范围等问题。
 
+当前 Unity 实现为 `ChemistryLab.Core.Calculation.LinearCalibrationService`，入口为：
+
+```csharp
+LinearCalibrationResult Fit(IReadOnlyList<CalibrationPoint> points);
+```
+
+它以最小二乘法拟合 `response = slope * concentration + intercept`，并返回 R²、点数和稳定的 `CalibrationErrorCode`。目前测试点为合成数值；标准溶液浓度、响应、接受阈值和任何样品换算规则仍待教师审核后通过内容配置接入。
+
 ## IRecordStore
 
 ```csharp
