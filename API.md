@@ -63,7 +63,7 @@ ConcentrationResult CalculateConcentration(
 LinearCalibrationResult Fit(IReadOnlyList<CalibrationPoint> points);
 ```
 
-它以最小二乘法拟合 `response = slope * concentration + intercept`，并返回 R²、点数和稳定的 `CalibrationErrorCode`。目前测试点为合成数值；标准溶液浓度、响应、接受阈值和任何样品换算规则仍待教师审核后通过内容配置接入。
+它以最小二乘法拟合 `response = slope * concentration + intercept`，并返回 R²、点数和稳定的 `CalibrationErrorCode`。`SampleConcentrationCalculator` 使用成功标定按 `(sampleResponse - intercept) / slope` 反算浓度，并返回稳定的 `SampleConcentrationErrorCode`。目前测试点为合成数值；标准溶液浓度、响应、接受阈值、稀释、空白扣除和其他样品换算规则仍待教师审核后通过内容配置接入。
 
 ## IRecordStore
 
