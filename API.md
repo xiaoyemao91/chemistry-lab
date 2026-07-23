@@ -1,0 +1,80 @@
+# 内部接口设计
+
+MVP 不提供 HTTP API。本文件定义应用层与基础设施之间的 C# 内部契约，具体签名可在实现时按 Unity 版本和测试需求微调，但职责边界不得随意合并。
+
+## IContentRepository
+
+```csharp
+Task<ContentLoadResult> LoadExperimentAsync(string experimentId, CancellationToken cancellationToken);
+```
+
+职责：读取、解析并校验实验配置。失败时返回结构化问题列表，不返回部分可运行配置。
+
+## IWorkflowRunner
+
+```csharp
+ExperimentState Start(ExperimentDefinition definition);
+CommandResult Execute(ExperimentCommand command);
+ExperimentState Pause();
+ExperimentState Resume();
+ExperimentState Reset();
+```
+
+职责：维护实验状态与步骤转换。命令失败不得产生部分状态更新。
+
+## IRuleEvaluator
+
+```csharp
+RuleEvaluationResult Evaluate(
+    ExperimentState state,
+    ExperimentCommand command,
+    ExperimentDefinition definition);
+```
+
+职责：验证操作顺序、参数范围、前置条件和配置规则，返回稳定错误码、学生提示和恢复建议。
+
+## ICalculationService
+
+```csharp
+CalibrationResult FitCalibration(IReadOnlyList<CalibrationPoint> points);
+ConcentrationResult CalculateConcentration(
+    MeasurementResult sample,
+    CalibrationResult calibration,
+    SampleCalculationRule rule);
+```
+
+职责：执行确定性计算并报告输入不足、退化拟合、非有限数值和超出适用范围等问题。
+
+## IRecordStore
+
+```csharp
+Task<SaveRecordResult> SaveAsync(ExperimentRecord record, CancellationToken cancellationToken);
+Task<LoadRecordResult> LoadAsync(string recordId, CancellationToken cancellationToken);
+Task<IReadOnlyList<RecordSummary>> ListAsync(CancellationToken cancellationToken);
+```
+
+职责：在本地用户数据目录保存和读取记录。路径由实现控制，调用者不能传入任意文件路径。
+
+## 核心数据约定
+
+- `ExperimentDefinition`：已通过结构、版本、引用和审核状态校验的不可变配置。
+- `ExperimentState`：当前会话、步骤、仪器状态、参数和测量结果的不可变快照。
+- `ExperimentCommand`：学生的一次意图，例如设置参数、启动泵或提交测量。
+- `CommandResult`：成功状态、错误码、用户提示和新状态。
+- `CalibrationResult`：斜率、截距、拟合指标、点数、有效范围和诊断信息。
+- `ExperimentRecord`：内容版本、操作事件、输入、计算结果、时间和完成状态。
+
+所有跨模块 DTO 使用稳定 ID，不依赖 Unity 场景对象引用。JSON 字段采用 `camelCase`，C# 类型和属性采用 `PascalCase`。
+
+## 错误码约定
+
+```text
+CONTENT_*      配置加载与校验
+WORKFLOW_*     状态和步骤转换
+RULE_*         操作顺序与参数规则
+CALCULATION_*  拟合与浓度计算
+RECORD_*       本地记录读写
+```
+
+错误码用于测试和日志，面向学生的文本由内容配置或本地化资源提供。
+

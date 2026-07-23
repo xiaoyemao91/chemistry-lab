@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulation Testing"
+  short_description: "Test calculations workflows records and Unity interactions"
+  default_prompt: "Use $testing to verify the current ICP-OES simulation module."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Experiment Content"
+  short_description: "Maintain validated experiment JSON content and rules"
+  default_prompt: "Use $content to add or review ICP-OES experiment content configuration."

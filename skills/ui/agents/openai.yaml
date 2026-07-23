@@ -1,0 +1,4 @@
+interface:
+  display_name: "Simulation UI"
+  short_description: "Build accessible Unity teaching simulation interfaces"
+  default_prompt: "Use $ui to design or implement the next Unity simulation interface."

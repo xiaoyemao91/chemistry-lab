@@ -1,0 +1,4 @@
+interface:
+  display_name: "ICP-OES Simulation"
+  short_description: "Implement and review ICP-OES simulation workflow behavior"
+  default_prompt: "Use $simulation to implement the next ICP-OES simulation workflow module."
