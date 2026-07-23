@@ -12,6 +12,16 @@ Task<ContentLoadResult> LoadExperimentAsync(string experimentId, CancellationTok
 
 当前 Unity 实现为 `ChemistryLab.Infrastructure.Content.ExperimentContentJsonRepository`，负责将 UTF-8 JSON 映射为内容模型并调用校验器。发布路径必须传入审核门禁，拒绝 `reviewStatus: "draft"` 的内容。
 
+## ExperimentSessionFactory
+
+```csharp
+ExperimentSessionStartResult StartFromJson(string json, bool requireApproved);
+```
+
+当前实现为 `ChemistryLab.Application.Sessions.ExperimentSessionFactory`。它协调内容加载、审核门禁和流程创建：只有内容仓库返回有效内容后，才将配置步骤转换为 `ExperimentDefinition` 并启动 `ExperimentWorkflow`。失败时返回原始的内容校验问题，且不会创建部分运行中的会话。
+
+`ExperimentSessionStartResult` 包含成功标记、已验证内容、已启动工作流或问题列表。它是当前主菜单与未来 Unity 场景绑定之间的最小应用层入口；测试中仅可传入显式标记为 `SYNTHETIC_TEST_DATA` 的合成 JSON，不能将其作为已审核教学参数。
+
 ## IWorkflowRunner
 
 ```csharp

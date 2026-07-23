@@ -3,7 +3,9 @@
   "rootNamespace": "ChemistryLab.Tests",
   "references": [
     "ChemistryLab.Core",
-    "ChemistryLab.Content"
+    "ChemistryLab.Content",
+    "ChemistryLab.Infrastructure",
+    "ChemistryLab.Application"
   ],
   "includePlatforms": [
     "Editor"

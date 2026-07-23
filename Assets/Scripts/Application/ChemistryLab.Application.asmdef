@@ -1,0 +1,18 @@
+{
+  "name": "ChemistryLab.Application",
+  "rootNamespace": "ChemistryLab.Application",
+  "references": [
+    "ChemistryLab.Core",
+    "ChemistryLab.Content",
+    "ChemistryLab.Infrastructure"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
