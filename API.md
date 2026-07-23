@@ -45,6 +45,8 @@ RuleEvaluationResult Evaluate(
 
 职责：验证操作顺序、参数范围、前置条件和配置规则，返回稳定错误码、学生提示和恢复建议。
 
+当前核心实现 `ChemistryLab.Core.Instrument.InstrumentController` 接受 `InstrumentAction` 并返回 `InstrumentTransitionResult`。它提供供电、泵和等离子体的最小教学状态，不依赖 Unity UI，也不包含真实仪器型号、数值参数或 SOP；后续由内容配置将教师审核规则接入该边界。
+
 ## ICalculationService
 
 ```csharp
