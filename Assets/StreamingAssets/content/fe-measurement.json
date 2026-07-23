@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0",
+  "contentVersion": "0.1.0-draft",
+  "experimentId": "fe-measurement",
+  "displayName": "Fe 测定",
+  "reviewStatus": "draft",
+  "sourceReference": "PENDING_TEACHER_REVIEW",
+  "steps": [
+    {
+      "stepId": "power-on-check",
+      "title": "开机与状态检查"
+    },
+    {
+      "stepId": "parameter-setup",
+      "title": "设置分析参数"
+    }
+  ],
+  "parameters": [],
+  "rules": [],
+  "calibration": {
+    "model": "PENDING_TEACHER_REVIEW"
+  },
+  "sampleCalculation": {
+    "formulaId": "PENDING_TEACHER_REVIEW"
+  }
+}
+

@@ -3,8 +3,7 @@
   "rootNamespace": "ChemistryLab.Tests",
   "references": [
     "ChemistryLab.Core",
-    "UnityEngine.TestRunner",
-    "UnityEditor.TestRunner"
+    "ChemistryLab.Content"
   ],
   "includePlatforms": [
     "Editor"
@@ -25,4 +24,3 @@
     "TestAssemblies"
   ]
 }
-

@@ -10,6 +10,8 @@ Task<ContentLoadResult> LoadExperimentAsync(string experimentId, CancellationTok
 
 职责：读取、解析并校验实验配置。失败时返回结构化问题列表，不返回部分可运行配置。
 
+当前 Unity 实现为 `ChemistryLab.Infrastructure.Content.ExperimentContentJsonRepository`，负责将 UTF-8 JSON 映射为内容模型并调用校验器。发布路径必须传入审核门禁，拒绝 `reviewStatus: "draft"` 的内容。
+
 ## IWorkflowRunner
 
 ```csharp
@@ -77,4 +79,3 @@ RECORD_*       本地记录读写
 ```
 
 错误码用于测试和日志，面向学生的文本由内容配置或本地化资源提供。
-
