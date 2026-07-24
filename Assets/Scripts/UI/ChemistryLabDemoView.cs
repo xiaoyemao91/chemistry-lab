@@ -1,8 +1,11 @@
+using System;
 using System.IO;
 using ChemistryLab.Application.Sessions;
 using ChemistryLab.Core.Instrument;
+using ChemistryLab.Core.Records;
 using ChemistryLab.Core.Workflow;
 using ChemistryLab.Infrastructure.Content;
+using ChemistryLab.Infrastructure.Records;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,11 +16,15 @@ namespace ChemistryLab.UI
     {
         private readonly InstrumentController instrument = new InstrumentController();
         private readonly ExperimentContentJsonRepository contentRepository = new ExperimentContentJsonRepository(new ChemistryLab.Core.Content.ExperimentContentValidator());
+        private ExperimentRecordJsonStore recordStore;
         private Text statusText;
         private ExperimentWorkflow workflow;
+        private ChemistryLab.Core.Content.ExperimentContentDefinition content;
+        private Guid recordId;
 
         private void Start()
         {
+            recordStore = new ExperimentRecordJsonStore(Path.Combine(UnityEngine.Application.persistentDataPath, "records"));
             CreateInterface();
             UpdateStatus("合成测试实验已准备；请先启动实验，再按仪器顺序操作。", Color.white);
         }
@@ -71,6 +78,8 @@ namespace ChemistryLab.UI
                     return;
                 }
 
+                content = sessionResult.Content;
+                recordId = Guid.NewGuid();
                 workflow = sessionResult.Workflow;
                 UpdateStatus("实验已开始：" + workflow.State.CurrentStepId, Color.green);
             }
@@ -89,7 +98,28 @@ namespace ChemistryLab.UI
             }
 
             var result = workflow.CompleteCurrentStep();
-            UpdateStatus(result.IsSuccess ? "流程状态：" + workflow.State.Status + "，当前步骤：" + (workflow.State.CurrentStepId ?? "无") : "流程错误：" + result.ErrorCode, result.IsSuccess ? Color.green : Color.yellow);
+            if (!result.IsSuccess)
+            {
+                UpdateStatus("流程错误：" + result.ErrorCode, Color.yellow);
+                return;
+            }
+
+            if (workflow.State.Status == ExperimentStatus.Completed)
+            {
+                var saveResult = recordStore.Save(new ExperimentRecord(
+                    recordId,
+                    content.ExperimentId,
+                    content.ContentVersion,
+                    workflow.State.Status.ToString(),
+                    workflow.State.CurrentStepId,
+                    DateTime.UtcNow));
+                UpdateStatus(
+                    saveResult.IsSuccess ? "实验完成，记录已保存：" + recordId : "实验完成但记录保存失败：" + saveResult.ErrorCode,
+                    saveResult.IsSuccess ? Color.green : Color.yellow);
+                return;
+            }
+
+            UpdateStatus("流程状态：" + workflow.State.Status + "，当前步骤：" + (workflow.State.CurrentStepId ?? "无"), Color.green);
         }
 
         private void ExecuteInstrument(InstrumentAction action)

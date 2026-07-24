@@ -85,6 +85,8 @@ Task<IReadOnlyList<RecordSummary>> ListAsync(CancellationToken cancellationToken
 
 实验启动时读取 `Assets/StreamingAssets/content/fe-measurement.json`，通过 `ExperimentSessionFactory` 校验后创建流程；当前原型允许 `draft` 合成内容，正式发布路径必须启用审核门禁。
 
+原型完成全部配置步骤后创建 `ExperimentRecord`，通过 `ExperimentRecordJsonStore` 写入本地 records 目录。记录只包含内容版本、流程状态、当前步骤和 GUID；真实测量输入与教师科学结果字段仍待后续配置模型扩展。
+
 ## 核心数据约定
 
 - `ExperimentDefinition`：已通过结构、版本、引用和审核状态校验的不可变配置。
