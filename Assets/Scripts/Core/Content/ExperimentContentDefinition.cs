@@ -13,6 +13,19 @@ namespace ChemistryLab.Core.Content
             ContentReviewStatus reviewStatus,
             string sourceReference,
             IEnumerable<ContentStepDefinition> steps)
+            : this(schemaVersion, contentVersion, experimentId, displayName, reviewStatus, sourceReference, steps, Array.Empty<ExperimentParameterDefinition>())
+        {
+        }
+
+        public ExperimentContentDefinition(
+            string schemaVersion,
+            string contentVersion,
+            string experimentId,
+            string displayName,
+            ContentReviewStatus reviewStatus,
+            string sourceReference,
+            IEnumerable<ContentStepDefinition> steps,
+            IEnumerable<ExperimentParameterDefinition> parameters)
         {
             SchemaVersion = schemaVersion;
             ContentVersion = contentVersion;
@@ -21,6 +34,7 @@ namespace ChemistryLab.Core.Content
             ReviewStatus = reviewStatus;
             SourceReference = sourceReference;
             Steps = new List<ContentStepDefinition>(steps ?? Array.Empty<ContentStepDefinition>()).AsReadOnly();
+            Parameters = new List<ExperimentParameterDefinition>(parameters ?? Array.Empty<ExperimentParameterDefinition>()).AsReadOnly();
         }
 
         public string SchemaVersion { get; }
@@ -36,6 +50,7 @@ namespace ChemistryLab.Core.Content
         public string SourceReference { get; }
 
         public IReadOnlyList<ContentStepDefinition> Steps { get; }
+
+        public IReadOnlyList<ExperimentParameterDefinition> Parameters { get; }
     }
 }
-

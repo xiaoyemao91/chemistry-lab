@@ -4,7 +4,7 @@
   "experimentId": "fe-measurement",
   "displayName": "Fe 测定",
   "reviewStatus": "draft",
-  "sourceReference": "PENDING_TEACHER_REVIEW",
+  "sourceReference": "SYNTHETIC_TEST_DATA",
   "steps": [
     {
       "stepId": "power-on-check",
@@ -15,7 +15,11 @@
       "title": "设置分析参数"
     }
   ],
-  "parameters": [],
+  "parameters": [
+    { "parameterId": "wavelength", "displayName": "波长（合成）", "unit": "nm", "defaultValue": 238.204, "minimum": 200.0, "maximum": 400.0 },
+    { "parameterId": "rf-power", "displayName": "射频功率（合成）", "unit": "W", "defaultValue": 1200.0, "minimum": 500.0, "maximum": 1800.0 },
+    { "parameterId": "plasma-gas-flow", "displayName": "等离子体气流（合成）", "unit": "L/min", "defaultValue": 15.0, "minimum": 5.0, "maximum": 25.0 }
+  ],
   "rules": [],
   "calibration": {
     "model": "PENDING_TEACHER_REVIEW"
@@ -24,4 +28,3 @@
     "formulaId": "PENDING_TEACHER_REVIEW"
   }
 }
-

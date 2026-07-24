@@ -81,7 +81,7 @@ namespace ChemistryLab.UI
                 content = sessionResult.Content;
                 recordId = Guid.NewGuid();
                 workflow = sessionResult.Workflow;
-                UpdateStatus("实验已开始：" + workflow.State.CurrentStepId, Color.green);
+                UpdateStatus("实验已开始：" + workflow.State.CurrentStepId + "，参数项：" + content.Parameters.Count, Color.green);
             }
             catch (IOException)
             {

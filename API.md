@@ -87,6 +87,8 @@ Task<IReadOnlyList<RecordSummary>> ListAsync(CancellationToken cancellationToken
 
 原型完成全部配置步骤后创建 `ExperimentRecord`，通过 `ExperimentRecordJsonStore` 写入本地 records 目录。记录只包含内容版本、流程状态、当前步骤和 GUID；真实测量输入与教师科学结果字段仍待后续配置模型扩展。
 
+`ExperimentParameterDefinition` 描述参数 ID、显示名称、单位、默认值和最小/最大值。内容校验器拒绝缺字段、非有限数值、反向范围、默认值越界和重复参数 ID；当前 JSON 参数均为合成占位。
+
 ## 核心数据约定
 
 - `ExperimentDefinition`：已通过结构、版本、引用和审核状态校验的不可变配置。

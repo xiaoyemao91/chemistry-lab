@@ -52,7 +52,20 @@ namespace ChemistryLab.Core.Content
             }
 
             ValidateSteps(definition.Steps, issues);
+            ValidateParameters(definition.Parameters, issues);
             return new ContentValidationResult(issues.AsReadOnly());
+        }
+
+        private static void ValidateParameters(IReadOnlyList<ExperimentParameterDefinition> parameters, ICollection<ContentValidationIssue> issues)
+        {
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            for (var index = 0; parameters != null && index < parameters.Count; index++)
+            {
+                var parameter = parameters[index];
+                var field = "parameters[" + index + "]";
+                if (parameter == null || !parameter.IsValid()) issues.Add(new ContentValidationIssue("CONTENT_INVALID_PARAMETER", field));
+                else if (!ids.Add(parameter.ParameterId)) issues.Add(new ContentValidationIssue("CONTENT_DUPLICATE_PARAMETER_ID", field + ".parameterId"));
+            }
         }
 
         private static void ValidateSteps(
@@ -84,4 +97,3 @@ namespace ChemistryLab.Core.Content
         }
     }
 }
-

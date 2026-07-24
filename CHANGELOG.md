@@ -27,3 +27,5 @@
 - 添加 UI 运行验证，覆盖实验启动、错误顺序提示和开机→泵→等离子体顺序。
 - 将 UI 实验启动改为读取 `StreamingAssets/content/fe-measurement.json`，保留合成 draft 内容标识。
 - 将原型流程完成状态写入 `Application.persistentDataPath/records`，并在 UI 显示生成的 GUID。
+- 为实验内容增加参数模型和范围校验，并在 UI 启动状态显示参数数量。
+- 添加 3 个明确标记为 `SYNTHETIC_TEST_DATA` 的参数模板；不代表真实仪器参数。

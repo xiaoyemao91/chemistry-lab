@@ -59,7 +59,8 @@ namespace ChemistryLab.Infrastructure.Content
                 dto.displayName,
                 reviewStatus,
                 dto.sourceReference,
-                ConvertSteps(dto.steps));
+                ConvertSteps(dto.steps),
+                ConvertParameters(dto.parameters));
 
             var validation = validator.Validate(definition, requireApproved);
             issues.AddRange(validation.Issues);
@@ -89,6 +90,17 @@ namespace ChemistryLab.Infrastructure.Content
             return definitions;
         }
 
+        private static IEnumerable<ExperimentParameterDefinition> ConvertParameters(ExperimentContentParameterDto[] parameters)
+        {
+            if (parameters == null) return Array.Empty<ExperimentParameterDefinition>();
+            var definitions = new List<ExperimentParameterDefinition>(parameters.Length);
+            foreach (var parameter in parameters)
+            {
+                if (parameter != null) definitions.Add(new ExperimentParameterDefinition(parameter.parameterId, parameter.displayName, parameter.unit, parameter.defaultValue, parameter.minimum, parameter.maximum));
+            }
+            return definitions;
+        }
+
         [Serializable]
         private sealed class ExperimentContentJsonDto
         {
@@ -99,6 +111,7 @@ namespace ChemistryLab.Infrastructure.Content
             public string reviewStatus;
             public string sourceReference;
             public ExperimentContentStepDto[] steps;
+            public ExperimentContentParameterDto[] parameters;
         }
 
         [Serializable]
@@ -107,6 +120,16 @@ namespace ChemistryLab.Infrastructure.Content
             public string stepId;
             public string title;
         }
+
+        [Serializable]
+        private sealed class ExperimentContentParameterDto
+        {
+            public string parameterId;
+            public string displayName;
+            public string unit;
+            public double defaultValue;
+            public double minimum;
+            public double maximum;
+        }
     }
 }
-
