@@ -27,6 +27,7 @@ namespace ChemistryLab.UI
         private ChemistryLab.Core.Content.ExperimentContentDefinition content;
         private Guid recordId;
         private LinearCalibrationResult calibrationResult;
+        private SampleConcentrationCalculationResult concentrationResult;
 
         private void Start()
         {
@@ -123,6 +124,22 @@ namespace ChemistryLab.UI
                 }
             }
 
+            if (workflow.State.CurrentStepId == "sample-measurement")
+            {
+                if (content.SampleMeasurement == null || !content.SampleMeasurement.IsValid())
+                {
+                    UpdateStatus("样品响应数据无效。", Color.yellow);
+                    return;
+                }
+
+                concentrationResult = new SampleConcentrationCalculator().Calculate(content.SampleMeasurement.Response, calibrationResult);
+                if (!concentrationResult.IsSuccess)
+                {
+                    UpdateStatus("浓度计算失败：" + concentrationResult.ErrorCode, Color.yellow);
+                    return;
+                }
+            }
+
             var result = workflow.CompleteCurrentStep();
             if (!result.IsSuccess)
             {
@@ -140,7 +157,7 @@ namespace ChemistryLab.UI
                     workflow.State.CurrentStepId,
                     DateTime.UtcNow));
                 UpdateStatus(
-                    saveResult.IsSuccess ? "实验完成，R²=" + calibrationResult.DeterminationCoefficient.ToString("0.000") + "，记录已保存：" + recordId : "实验完成但记录保存失败：" + saveResult.ErrorCode,
+                    saveResult.IsSuccess ? "实验完成，浓度=" + concentrationResult.Concentration.ToString("0.000") + "，R²=" + calibrationResult.DeterminationCoefficient.ToString("0.000") + "，记录已保存：" + recordId : "实验完成但记录保存失败：" + saveResult.ErrorCode,
                     saveResult.IsSuccess ? Color.green : Color.yellow);
                 return;
             }

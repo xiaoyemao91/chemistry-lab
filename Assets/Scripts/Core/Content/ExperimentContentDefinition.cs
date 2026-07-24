@@ -13,7 +13,7 @@ namespace ChemistryLab.Core.Content
             ContentReviewStatus reviewStatus,
             string sourceReference,
             IEnumerable<ContentStepDefinition> steps)
-            : this(schemaVersion, contentVersion, experimentId, displayName, reviewStatus, sourceReference, steps, Array.Empty<ExperimentParameterDefinition>(), Array.Empty<ContentCalibrationPoint>())
+            : this(schemaVersion, contentVersion, experimentId, displayName, reviewStatus, sourceReference, steps, Array.Empty<ExperimentParameterDefinition>(), Array.Empty<ContentCalibrationPoint>(), null)
         {
         }
 
@@ -26,7 +26,8 @@ namespace ChemistryLab.Core.Content
             string sourceReference,
             IEnumerable<ContentStepDefinition> steps,
             IEnumerable<ExperimentParameterDefinition> parameters,
-            IEnumerable<ContentCalibrationPoint> calibrationPoints)
+            IEnumerable<ContentCalibrationPoint> calibrationPoints,
+            ContentSampleMeasurement sampleMeasurement)
         {
             SchemaVersion = schemaVersion;
             ContentVersion = contentVersion;
@@ -37,6 +38,7 @@ namespace ChemistryLab.Core.Content
             Steps = new List<ContentStepDefinition>(steps ?? Array.Empty<ContentStepDefinition>()).AsReadOnly();
             Parameters = new List<ExperimentParameterDefinition>(parameters ?? Array.Empty<ExperimentParameterDefinition>()).AsReadOnly();
             CalibrationPoints = new List<ContentCalibrationPoint>(calibrationPoints ?? Array.Empty<ContentCalibrationPoint>()).AsReadOnly();
+            SampleMeasurement = sampleMeasurement;
         }
 
         public string SchemaVersion { get; }
@@ -56,5 +58,7 @@ namespace ChemistryLab.Core.Content
         public IReadOnlyList<ExperimentParameterDefinition> Parameters { get; }
 
         public IReadOnlyList<ContentCalibrationPoint> CalibrationPoints { get; }
+
+        public ContentSampleMeasurement SampleMeasurement { get; }
     }
 }

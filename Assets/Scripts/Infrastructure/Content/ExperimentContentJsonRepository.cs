@@ -61,7 +61,8 @@ namespace ChemistryLab.Infrastructure.Content
                 dto.sourceReference,
                 ConvertSteps(dto.steps),
                 ConvertParameters(dto.parameters),
-                ConvertCalibrationPoints(dto.calibrationPoints));
+                ConvertCalibrationPoints(dto.calibrationPoints),
+                ConvertSampleMeasurement(dto.sampleMeasurement));
 
             var validation = validator.Validate(definition, requireApproved);
             issues.AddRange(validation.Issues);
@@ -113,6 +114,11 @@ namespace ChemistryLab.Infrastructure.Content
             return definitions;
         }
 
+        private static ContentSampleMeasurement ConvertSampleMeasurement(ExperimentContentSampleMeasurementDto measurement)
+        {
+            return measurement == null ? null : new ContentSampleMeasurement(measurement.response);
+        }
+
         [Serializable]
         private sealed class ExperimentContentJsonDto
         {
@@ -125,6 +131,7 @@ namespace ChemistryLab.Infrastructure.Content
             public ExperimentContentStepDto[] steps;
             public ExperimentContentParameterDto[] parameters;
             public ExperimentContentCalibrationPointDto[] calibrationPoints;
+            public ExperimentContentSampleMeasurementDto sampleMeasurement;
         }
 
         [Serializable]
@@ -149,6 +156,12 @@ namespace ChemistryLab.Infrastructure.Content
         private sealed class ExperimentContentCalibrationPointDto
         {
             public double concentration;
+            public double response;
+        }
+
+        [Serializable]
+        private sealed class ExperimentContentSampleMeasurementDto
+        {
             public double response;
         }
     }

@@ -17,6 +17,14 @@
     {
       "stepId": "calibration",
       "title": "合成标准曲线测量"
+    },
+    {
+      "stepId": "sample-measurement",
+      "title": "合成样品测量"
+    },
+    {
+      "stepId": "record-result",
+      "title": "保存实验记录"
     }
   ],
   "parameters": [
@@ -30,6 +38,7 @@
     { "concentration": 2.0, "response": 5.0 },
     { "concentration": 3.0, "response": 7.0 }
   ],
+  "sampleMeasurement": { "response": 7.0 },
   "rules": [],
   "calibration": {
     "model": "PENDING_TEACHER_REVIEW"
