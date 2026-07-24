@@ -91,6 +91,8 @@ Task<IReadOnlyList<RecordSummary>> ListAsync(CancellationToken cancellationToken
 
 `ChemistryLabDemoView` 在进入参数步骤时为内容参数创建输入框，完成步骤前执行有限数值和范围校验；当前输入值尚未写入实验记录，后续记录模型扩展时接入。
 
+内容模型现在可携带 `ContentCalibrationPoint` 列表；UI 在 `calibration` 步骤调用 `LinearCalibrationService`，当前合成点得到 R²=1.000。真实标准溶液和响应数据仍需教师审核。
+
 ## 核心数据约定
 
 - `ExperimentDefinition`：已通过结构、版本、引用和审核状态校验的不可变配置。

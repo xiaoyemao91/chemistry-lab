@@ -13,12 +13,22 @@
     {
       "stepId": "parameter-setup",
       "title": "设置分析参数"
+    },
+    {
+      "stepId": "calibration",
+      "title": "合成标准曲线测量"
     }
   ],
   "parameters": [
     { "parameterId": "wavelength", "displayName": "波长（合成）", "unit": "nm", "defaultValue": 238.204, "minimum": 200.0, "maximum": 400.0 },
     { "parameterId": "rf-power", "displayName": "射频功率（合成）", "unit": "W", "defaultValue": 1200.0, "minimum": 500.0, "maximum": 1800.0 },
     { "parameterId": "plasma-gas-flow", "displayName": "等离子体气流（合成）", "unit": "L/min", "defaultValue": 15.0, "minimum": 5.0, "maximum": 25.0 }
+  ],
+  "calibrationPoints": [
+    { "concentration": 0.0, "response": 1.0 },
+    { "concentration": 1.0, "response": 3.0 },
+    { "concentration": 2.0, "response": 5.0 },
+    { "concentration": 3.0, "response": 7.0 }
   ],
   "rules": [],
   "calibration": {

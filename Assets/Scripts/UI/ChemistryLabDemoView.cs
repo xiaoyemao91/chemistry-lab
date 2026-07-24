@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using ChemistryLab.Application.Sessions;
+using ChemistryLab.Core.Calculation;
 using ChemistryLab.Core.Instrument;
 using ChemistryLab.Core.Records;
 using ChemistryLab.Core.Workflow;
@@ -25,6 +26,7 @@ namespace ChemistryLab.UI
         private ExperimentWorkflow workflow;
         private ChemistryLab.Core.Content.ExperimentContentDefinition content;
         private Guid recordId;
+        private LinearCalibrationResult calibrationResult;
 
         private void Start()
         {
@@ -109,6 +111,18 @@ namespace ChemistryLab.UI
                 return;
             }
 
+            if (workflow.State.CurrentStepId == "calibration")
+            {
+                var points = new List<CalibrationPoint>();
+                foreach (var point in content.CalibrationPoints) points.Add(new CalibrationPoint(point.Concentration, point.Response));
+                calibrationResult = new LinearCalibrationService().Fit(points);
+                if (!calibrationResult.IsSuccess)
+                {
+                    UpdateStatus("标定失败：" + calibrationResult.ErrorCode, Color.yellow);
+                    return;
+                }
+            }
+
             var result = workflow.CompleteCurrentStep();
             if (!result.IsSuccess)
             {
@@ -126,7 +140,7 @@ namespace ChemistryLab.UI
                     workflow.State.CurrentStepId,
                     DateTime.UtcNow));
                 UpdateStatus(
-                    saveResult.IsSuccess ? "实验完成，记录已保存：" + recordId : "实验完成但记录保存失败：" + saveResult.ErrorCode,
+                    saveResult.IsSuccess ? "实验完成，R²=" + calibrationResult.DeterminationCoefficient.ToString("0.000") + "，记录已保存：" + recordId : "实验完成但记录保存失败：" + saveResult.ErrorCode,
                     saveResult.IsSuccess ? Color.green : Color.yellow);
                 return;
             }

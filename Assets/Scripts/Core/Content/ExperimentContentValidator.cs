@@ -53,7 +53,19 @@ namespace ChemistryLab.Core.Content
 
             ValidateSteps(definition.Steps, issues);
             ValidateParameters(definition.Parameters, issues);
+            ValidateCalibrationPoints(definition.CalibrationPoints, issues);
             return new ContentValidationResult(issues.AsReadOnly());
+        }
+
+        private static void ValidateCalibrationPoints(IReadOnlyList<ContentCalibrationPoint> points, ICollection<ContentValidationIssue> issues)
+        {
+            for (var index = 0; points != null && index < points.Count; index++)
+            {
+                if (points[index] == null || !points[index].IsValid())
+                {
+                    issues.Add(new ContentValidationIssue("CONTENT_INVALID_CALIBRATION_POINT", "calibrationPoints[" + index + "]"));
+                }
+            }
         }
 
         private static void ValidateParameters(IReadOnlyList<ExperimentParameterDefinition> parameters, ICollection<ContentValidationIssue> issues)
