@@ -117,3 +117,12 @@ RECORD_*       本地记录读写
 ```
 
 错误码用于测试和日志，面向学生的文本由内容配置或本地化资源提供。
+## UI 流程控制补充
+
+`ChemistryLab.UI.ChemistryLabDemoView` 当前提供以下教学原型操作：
+
+- `暂停/恢复`：调用 `ExperimentWorkflow.Pause()` 或 `Resume()`。
+- `重置流程`：将流程恢复为 `NotStarted`，清空本次计算结果和当前记录 ID。
+- `读取当前记录`：通过 `ExperimentRecordJsonStore.Load()` 读取本次完成实验的 GUID 记录。
+
+这些操作只服务于离线 MVP 原型，不构成真实 ICP-OES 仪器控制协议。

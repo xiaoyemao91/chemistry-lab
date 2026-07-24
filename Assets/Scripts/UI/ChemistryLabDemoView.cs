@@ -71,6 +71,9 @@ namespace ChemistryLab.UI
             CreateButton(panel.transform, "熄灭等离子体", new Vector2(0.35f, 0.35f), new Vector2(0.55f, 0.45f), () => ExecuteInstrument(InstrumentAction.ExtinguishPlasma));
             CreateButton(panel.transform, "停止泵", new Vector2(0.60f, 0.35f), new Vector2(0.75f, 0.45f), () => ExecuteInstrument(InstrumentAction.StopPump));
             CreateButton(panel.transform, "关机", new Vector2(0.80f, 0.35f), new Vector2(0.95f, 0.45f), () => ExecuteInstrument(InstrumentAction.PowerOff));
+            CreateButton(panel.transform, "暂停/恢复", new Vector2(0.05f, 0.25f), new Vector2(0.30f, 0.33f), PauseOrResumeWorkflow);
+            CreateButton(panel.transform, "重置流程", new Vector2(0.35f, 0.25f), new Vector2(0.60f, 0.33f), ResetWorkflow);
+            CreateButton(panel.transform, "读取当前记录", new Vector2(0.65f, 0.25f), new Vector2(0.95f, 0.33f), LoadCurrentRecord);
         }
 
         private void StartExperiment()
@@ -175,6 +178,60 @@ namespace ChemistryLab.UI
             UpdateStatus(message, result.IsSuccess ? Color.green : Color.yellow);
         }
 
+        private void PauseOrResumeWorkflow()
+        {
+            if (workflow == null)
+            {
+                UpdateStatus("请先开始实验。", Color.yellow);
+                return;
+            }
+
+            var result = workflow.State.Status == ExperimentStatus.Paused
+                ? workflow.Resume()
+                : workflow.Pause();
+            if (!result.IsSuccess)
+            {
+                UpdateStatus("流程控制失败：" + result.ErrorCode, Color.yellow);
+                return;
+            }
+
+            UpdateStatus("流程状态：" + workflow.State.Status + "，当前步骤：" + (workflow.State.CurrentStepId ?? "无"), Color.green);
+        }
+
+        private void ResetWorkflow()
+        {
+            if (workflow == null)
+            {
+                UpdateStatus("当前没有可重置的实验。", Color.yellow);
+                return;
+            }
+
+            workflow.Reset();
+            recordId = Guid.Empty;
+            calibrationResult = null;
+            concentrationResult = null;
+            UpdateStatus("实验流程已重置，请重新完成实验。", Color.green);
+        }
+
+        private void LoadCurrentRecord()
+        {
+            if (recordStore == null || recordId == Guid.Empty)
+            {
+                UpdateStatus("当前没有可读取的实验记录。", Color.yellow);
+                return;
+            }
+
+            var loadResult = recordStore.Load(recordId.ToString("D"));
+            if (!loadResult.IsSuccess)
+            {
+                UpdateStatus("记录读取失败：" + loadResult.ErrorCode, Color.yellow);
+                return;
+            }
+
+            var record = loadResult.Record;
+            UpdateStatus("记录已读取：" + record.RecordId + "，状态=" + record.WorkflowStatus + "，步骤=" + (record.CurrentStepId ?? "无"), Color.green);
+        }
+
         private void UpdateStatus(string message, Color color)
         {
             if (statusText != null)
@@ -188,14 +245,14 @@ namespace ChemistryLab.UI
         {
             if (parameterInputs.Count > 0 || parameters == null) return;
 
-            CreateLabel(panelTransform, "分析参数（合成测试数据，可编辑）", new Vector2(0.05f, 0.25f), new Vector2(0.95f, 0.31f), 13, new Color(0.8f, 0.86f, 0.92f));
+            CreateLabel(panelTransform, "分析参数（合成测试数据，可编辑）", new Vector2(0.05f, 0.18f), new Vector2(0.95f, 0.23f), 13, new Color(0.8f, 0.86f, 0.92f));
             for (var index = 0; index < parameters.Count; index++)
             {
                 var parameter = parameters[index];
                 var minimum = 0.05f + index * 0.30f;
                 var maximum = minimum + 0.27f;
-                CreateLabel(panelTransform, parameter.DisplayName + " (" + parameter.Unit + ")", new Vector2(minimum, 0.18f), new Vector2(maximum, 0.24f), 11, Color.white);
-                var input = CreateInputField(panelTransform, parameter.DefaultValue.ToString(CultureInfo.InvariantCulture), new Vector2(minimum, 0.10f), new Vector2(maximum, 0.17f));
+                CreateLabel(panelTransform, parameter.DisplayName + " (" + parameter.Unit + ")", new Vector2(minimum, 0.12f), new Vector2(maximum, 0.17f), 11, Color.white);
+                var input = CreateInputField(panelTransform, parameter.DefaultValue.ToString(CultureInfo.InvariantCulture), new Vector2(minimum, 0.05f), new Vector2(maximum, 0.11f));
                 parameterInputs.Add(parameter.ParameterId, input);
             }
         }
