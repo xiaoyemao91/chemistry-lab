@@ -2,6 +2,7 @@
   "name": "ChemistryLab.Infrastructure",
   "rootNamespace": "ChemistryLab.Infrastructure",
   "references": [
+    "ChemistryLab.Core",
     "ChemistryLab.Content"
   ],
   "includePlatforms": [],
@@ -14,4 +15,3 @@
   "versionDefines": [],
   "noEngineReferences": false
 }
-

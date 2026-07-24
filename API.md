@@ -77,6 +77,8 @@ Task<IReadOnlyList<RecordSummary>> ListAsync(CancellationToken cancellationToken
 
 职责：在本地用户数据目录保存和读取记录。路径由实现控制，调用者不能传入任意文件路径。
 
+当前 Unity 实现 `ChemistryLab.Infrastructure.Records.ExperimentRecordJsonStore` 保存和读取最小记录快照。记录 ID 使用 GUID，加载入口拒绝非 GUID 值；后续 UI 会以 `Application.persistentDataPath/records/` 创建该存储实例。
+
 ## 核心数据约定
 
 - `ExperimentDefinition`：已通过结构、版本、引用和审核状态校验的不可变配置。

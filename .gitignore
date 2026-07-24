@@ -41,10 +41,9 @@ Thumbs.db
 Desktop.ini
 
 # Local records and secrets
-records/
+/records/
 .env
 .env.*
 *.local.json
 
 !.env.example
-
