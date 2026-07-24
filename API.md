@@ -83,6 +83,8 @@ Task<IReadOnlyList<RecordSummary>> ListAsync(CancellationToken cancellationToken
 
 `ChemistryLab.UI.ChemistryLabDemoView` 是当前 `SampleScene` 的原型 UI 入口。它在运行时创建 Canvas、状态文本和操作按钮，并调用应用已有的 `ExperimentWorkflow` 与 `InstrumentController`。界面中的内容明确标记为合成测试数据；正式 UI 仍需接入教师审核的内容配置和本地化资源。
 
+实验启动时读取 `Assets/StreamingAssets/content/fe-measurement.json`，通过 `ExperimentSessionFactory` 校验后创建流程；当前原型允许 `draft` 合成内容，正式发布路径必须启用审核门禁。
+
 ## 核心数据约定
 
 - `ExperimentDefinition`：已通过结构、版本、引用和审核状态校验的不可变配置。

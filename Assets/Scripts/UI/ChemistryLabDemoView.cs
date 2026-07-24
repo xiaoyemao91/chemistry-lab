@@ -1,5 +1,8 @@
+using System.IO;
+using ChemistryLab.Application.Sessions;
 using ChemistryLab.Core.Instrument;
 using ChemistryLab.Core.Workflow;
+using ChemistryLab.Infrastructure.Content;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,26 +12,14 @@ namespace ChemistryLab.UI
     public sealed class ChemistryLabDemoView : MonoBehaviour
     {
         private readonly InstrumentController instrument = new InstrumentController();
+        private readonly ExperimentContentJsonRepository contentRepository = new ExperimentContentJsonRepository(new ChemistryLab.Core.Content.ExperimentContentValidator());
         private Text statusText;
         private ExperimentWorkflow workflow;
 
         private void Start()
         {
-            CreateDemoWorkflow();
             CreateInterface();
             UpdateStatus("合成测试实验已准备；请先启动实验，再按仪器顺序操作。", Color.white);
-        }
-
-        private void CreateDemoWorkflow()
-        {
-            workflow = new ExperimentWorkflow(new ExperimentDefinition(new[]
-            {
-                new ExperimentStepDefinition("power-on-check", "开机与状态检查"),
-                new ExperimentStepDefinition("parameter-setup", "分析参数设置"),
-                new ExperimentStepDefinition("calibration", "标准曲线测量"),
-                new ExperimentStepDefinition("sample-measurement", "样品测量"),
-                new ExperimentStepDefinition("record-result", "保存实验记录")
-            }));
         }
 
         private void CreateInterface()
@@ -69,12 +60,34 @@ namespace ChemistryLab.UI
 
         private void StartExperiment()
         {
-            var result = workflow.Start();
-            UpdateStatus(result.IsSuccess ? "实验已开始：" + workflow.State.CurrentStepId : "无法开始：" + result.ErrorCode, result.IsSuccess ? Color.green : Color.yellow);
+            var contentPath = Path.Combine(UnityEngine.Application.streamingAssetsPath, "content", "fe-measurement.json");
+            try
+            {
+                var contentJson = File.ReadAllText(contentPath);
+                var sessionResult = new ExperimentSessionFactory(contentRepository).StartFromJson(contentJson, false);
+                if (!sessionResult.IsSuccess)
+                {
+                    UpdateStatus("内容无法启动：" + sessionResult.Issues[0].Code, Color.yellow);
+                    return;
+                }
+
+                workflow = sessionResult.Workflow;
+                UpdateStatus("实验已开始：" + workflow.State.CurrentStepId, Color.green);
+            }
+            catch (IOException)
+            {
+                UpdateStatus("内容文件读取失败：" + contentPath, Color.yellow);
+            }
         }
 
         private void CompleteStep()
         {
+            if (workflow == null)
+            {
+                UpdateStatus("请先开始实验。", Color.yellow);
+                return;
+            }
+
             var result = workflow.CompleteCurrentStep();
             UpdateStatus(result.IsSuccess ? "流程状态：" + workflow.State.Status + "，当前步骤：" + (workflow.State.CurrentStepId ?? "无") : "流程错误：" + result.ErrorCode, result.IsSuccess ? Color.green : Color.yellow);
         }

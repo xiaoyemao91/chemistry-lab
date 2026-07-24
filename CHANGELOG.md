@@ -25,3 +25,4 @@
 - 添加本地 JSON 实验记录保存与读取，使用 GUID 文件名和临时文件替换写入。
 - 添加 `SampleScene` 中的可运行 ICP-OES 原型界面，展示流程状态和仪器操作按钮。
 - 添加 UI 运行验证，覆盖实验启动、错误顺序提示和开机→泵→等离子体顺序。
+- 将 UI 实验启动改为读取 `StreamingAssets/content/fe-measurement.json`，保留合成 draft 内容标识。
