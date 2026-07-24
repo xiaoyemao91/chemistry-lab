@@ -79,6 +79,10 @@ Task<IReadOnlyList<RecordSummary>> ListAsync(CancellationToken cancellationToken
 
 当前 Unity 实现 `ChemistryLab.Infrastructure.Records.ExperimentRecordJsonStore` 保存和读取最小记录快照。记录 ID 使用 GUID，加载入口拒绝非 GUID 值；后续 UI 会以 `Application.persistentDataPath/records/` 创建该存储实例。
 
+## ChemistryLabDemoView
+
+`ChemistryLab.UI.ChemistryLabDemoView` 是当前 `SampleScene` 的原型 UI 入口。它在运行时创建 Canvas、状态文本和操作按钮，并调用应用已有的 `ExperimentWorkflow` 与 `InstrumentController`。界面中的内容明确标记为合成测试数据；正式 UI 仍需接入教师审核的内容配置和本地化资源。
+
 ## 核心数据约定
 
 - `ExperimentDefinition`：已通过结构、版本、引用和审核状态校验的不可变配置。
