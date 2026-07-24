@@ -29,3 +29,4 @@
 - 将原型流程完成状态写入 `Application.persistentDataPath/records`，并在 UI 显示生成的 GUID。
 - 为实验内容增加参数模型和范围校验，并在 UI 启动状态显示参数数量。
 - 添加 3 个明确标记为 `SYNTHETIC_TEST_DATA` 的参数模板；不代表真实仪器参数。
+- 在原型 UI 中动态创建参数输入框，并阻止越界值推进流程。

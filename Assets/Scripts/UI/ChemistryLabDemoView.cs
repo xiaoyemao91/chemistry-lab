@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using ChemistryLab.Application.Sessions;
 using ChemistryLab.Core.Instrument;
@@ -17,7 +19,9 @@ namespace ChemistryLab.UI
         private readonly InstrumentController instrument = new InstrumentController();
         private readonly ExperimentContentJsonRepository contentRepository = new ExperimentContentJsonRepository(new ChemistryLab.Core.Content.ExperimentContentValidator());
         private ExperimentRecordJsonStore recordStore;
+        private readonly Dictionary<string, InputField> parameterInputs = new Dictionary<string, InputField>();
         private Text statusText;
+        private Transform panelTransform;
         private ExperimentWorkflow workflow;
         private ChemistryLab.Core.Content.ExperimentContentDefinition content;
         private Guid recordId;
@@ -45,6 +49,7 @@ namespace ChemistryLab.UI
             canvasObject.AddComponent<GraphicRaycaster>();
 
             var panel = CreatePanel(canvasObject.transform, new Color(0.05f, 0.08f, 0.12f, 0.96f));
+            panelTransform = panel.transform;
             var panelRect = panel.GetComponent<RectTransform>();
             panelRect.anchorMin = new Vector2(0.08f, 0.08f);
             panelRect.anchorMax = new Vector2(0.92f, 0.92f);
@@ -80,6 +85,7 @@ namespace ChemistryLab.UI
 
                 content = sessionResult.Content;
                 recordId = Guid.NewGuid();
+                CreateParameterInputs(content.Parameters);
                 workflow = sessionResult.Workflow;
                 UpdateStatus("实验已开始：" + workflow.State.CurrentStepId + "，参数项：" + content.Parameters.Count, Color.green);
             }
@@ -94,6 +100,12 @@ namespace ChemistryLab.UI
             if (workflow == null)
             {
                 UpdateStatus("请先开始实验。", Color.yellow);
+                return;
+            }
+
+            if (workflow.State.CurrentStepId == "parameter-setup" && !ValidateParameters(out var validationMessage))
+            {
+                UpdateStatus(validationMessage, Color.yellow);
                 return;
             }
 
@@ -141,6 +153,44 @@ namespace ChemistryLab.UI
             }
         }
 
+        private void CreateParameterInputs(IReadOnlyList<ChemistryLab.Core.Content.ExperimentParameterDefinition> parameters)
+        {
+            if (parameterInputs.Count > 0 || parameters == null) return;
+
+            CreateLabel(panelTransform, "分析参数（合成测试数据，可编辑）", new Vector2(0.05f, 0.25f), new Vector2(0.95f, 0.31f), 13, new Color(0.8f, 0.86f, 0.92f));
+            for (var index = 0; index < parameters.Count; index++)
+            {
+                var parameter = parameters[index];
+                var minimum = 0.05f + index * 0.30f;
+                var maximum = minimum + 0.27f;
+                CreateLabel(panelTransform, parameter.DisplayName + " (" + parameter.Unit + ")", new Vector2(minimum, 0.18f), new Vector2(maximum, 0.24f), 11, Color.white);
+                var input = CreateInputField(panelTransform, parameter.DefaultValue.ToString(CultureInfo.InvariantCulture), new Vector2(minimum, 0.10f), new Vector2(maximum, 0.17f));
+                parameterInputs.Add(parameter.ParameterId, input);
+            }
+        }
+
+        private bool ValidateParameters(out string message)
+        {
+            foreach (var parameter in content.Parameters)
+            {
+                if (!parameterInputs.TryGetValue(parameter.ParameterId, out var input)
+                    || !double.TryParse(input.text, NumberStyles.Float, CultureInfo.InvariantCulture, out var value))
+                {
+                    message = "参数输入无效：" + parameter.DisplayName;
+                    return false;
+                }
+
+                if (value < parameter.Minimum || value > parameter.Maximum)
+                {
+                    message = parameter.DisplayName + " 超出范围：" + parameter.Minimum + " - " + parameter.Maximum + " " + parameter.Unit;
+                    return false;
+                }
+            }
+
+            message = string.Empty;
+            return true;
+        }
+
         private static GameObject CreatePanel(Transform parent, Color color)
         {
             var panel = new GameObject("ExperimentPanel", typeof(RectTransform), typeof(Image));
@@ -180,6 +230,24 @@ namespace ChemistryLab.UI
             buttonObject.GetComponent<Button>().onClick.AddListener(action);
             var label = CreateLabel(buttonObject.transform, text, Vector2.zero, Vector2.one, 16, Color.white);
             label.alignment = TextAnchor.MiddleCenter;
+        }
+
+        private static InputField CreateInputField(Transform parent, string value, Vector2 anchorMin, Vector2 anchorMax)
+        {
+            var inputObject = new GameObject("ParameterInput", typeof(RectTransform), typeof(Image), typeof(InputField));
+            inputObject.transform.SetParent(parent, false);
+            var rect = inputObject.GetComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            inputObject.GetComponent<Image>().color = new Color(0.92f, 0.95f, 0.98f, 1f);
+            var input = inputObject.GetComponent<InputField>();
+            var text = CreateLabel(inputObject.transform, value, Vector2.zero, Vector2.one, 12, Color.black);
+            text.alignment = TextAnchor.MiddleCenter;
+            input.textComponent = text;
+            input.text = value;
+            return input;
         }
     }
 }

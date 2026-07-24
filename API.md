@@ -89,6 +89,8 @@ Task<IReadOnlyList<RecordSummary>> ListAsync(CancellationToken cancellationToken
 
 `ExperimentParameterDefinition` 描述参数 ID、显示名称、单位、默认值和最小/最大值。内容校验器拒绝缺字段、非有限数值、反向范围、默认值越界和重复参数 ID；当前 JSON 参数均为合成占位。
 
+`ChemistryLabDemoView` 在进入参数步骤时为内容参数创建输入框，完成步骤前执行有限数值和范围校验；当前输入值尚未写入实验记录，后续记录模型扩展时接入。
+
 ## 核心数据约定
 
 - `ExperimentDefinition`：已通过结构、版本、引用和审核状态校验的不可变配置。
